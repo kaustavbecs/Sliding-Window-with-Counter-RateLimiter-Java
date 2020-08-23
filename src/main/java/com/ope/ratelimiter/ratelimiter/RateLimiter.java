@@ -16,6 +16,9 @@ public class RateLimiter {
   @Value("${request.count.limit}")
   private long RATE_LIMIT;
 
+  @Value("${ratelimiter.bucket.size}")
+  private long BUCKET_SIZE;
+
   private static final Logger logger = LoggerFactory.getLogger(RateLimiter.class);
   Map<String, Queue<Long>> UserTimeMap = new HashMap<>();
 
