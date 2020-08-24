@@ -1,14 +1,14 @@
 ## **Features**
-This SpringBoot service serves as an API rate limiter for your other microservices
+This SpringBoot service serves as an API rate limiter for your other Microservices.
 
 ## **Configurations**
 
 Change the following parameters in application.properties as per your need:
 
-1. **request.time.limit.inseconds**: Overall time window (in seconds) to apply rate limit
-2. **request.count.limit**: Overall request count allowed in the time window
+1. **request.time.limit.inseconds**: Overall time window (in seconds) to apply rate limit.
+2. **request.count.limit**: Overall request count allowed in the time window.
 3. **time.window.count**: Number of smaller time window buckets that the program will use. This parameter will determine the granularity of the checks. Higher value will yield more accurate results but with higher memory footprint.
-4. **header.userid.attribute.name**: UserID attribute name in the HTTP header
+4. **header.userid.attribute.name**: UserID attribute name in the HTTP header. This application uses this attribute name to uniquely identify a user and then applies rate limit on incoming requests based on the configured parameters.
 
 ## **Deployment steps**
 
