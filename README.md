@@ -10,7 +10,7 @@ Change the following parameters in application.properties as per your need:
 3. **time.window.count**: Number of smaller time window buckets that the program will use. This parameter will determine the granularity of the checks. Higher value will yield more accurate results but with higher memory footprint.
 4. **header.userid.attribute.name**: UserID attribute name in the HTTP header
 
-##**Deployment steps**
+## **Deployment steps**
 
 To build and run the application you need to have Maven and JDK8+ OR Docker.
 1. To build it, run the command: **mvn clean package** (It may take up to two minutes for all the test cases to run)
