@@ -21,60 +21,37 @@ class RatelimiterApplicationTests {
 
   @Test
   public void checkForNewUser() throws Exception {
-    assertThat(rateLimiter.isAllowed("NewBee"));
+    assertThat(rateLimiter.isAllowed("NewBee")).isEqualTo(true);
   }
 
   @Test
   public void checkForOldUserWithNewTime() throws Exception {
     rateLimiter.isAllowed("OldFaithful");
     Thread.sleep(101);
-    assertThat(rateLimiter.isAllowed("OldFaithful"));
+    assertThat(rateLimiter.isAllowed("OldFaithful")).isEqualTo(true);
   }
   @Test
   public void checkForOldUserWithOldTimeWithinRateLimit() throws Exception {
-    rateLimiter.isAllowed("OldFaithfulWithOldTime");
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
+    for (int i=0;i<rateLimiter.RATE_LIMIT;i++)
+      assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondTimeLimit")).isEqualTo(true);
   }
   @Test
   public void checkForOldUserWithOldTimeExceedingRateLimit() throws Exception {
-    rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate");
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate"));
+    for (int i=0;i<rateLimiter.RATE_LIMIT;i++)
+      assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondTimeLimit")).isEqualTo(true);
     Thread.sleep(1);
     assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate")).isEqualTo(false);
     Thread.sleep(1);
     assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate")).isEqualTo(false);
+  }
+  @Test
+  public void checkForRateLimitExceedShouldNotImpactOtherUsers() throws Exception {
+    for (int i=0;i<rateLimiter.RATE_LIMIT;i++)
+      assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondTimeLimit")).isEqualTo(true);
     Thread.sleep(1);
     assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate")).isEqualTo(false);
     Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTimeBeyondRate")).isEqualTo(false);
-    Thread.sleep(1);
-    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime"));
+    assertThat(rateLimiter.isAllowed("OldFaithfulWithOldTime")).isEqualTo(true);
   }
   @Test
   public void checkForOldCountDeletion() throws Exception {
