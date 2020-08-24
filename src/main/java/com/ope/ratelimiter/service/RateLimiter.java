@@ -13,13 +13,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RateLimiter {
 
   @Value("${request.time.limit.inseconds}")
-  private long TIME_LIMIT;
+  public long TIME_LIMIT;
 
   @Value("${request.count.limit}")
-  private long RATE_LIMIT;
+  public long RATE_LIMIT;
 
   @Value("${time.window.count}")
-  private long NUMBER_OF_TIME_WINDOWS;
+  public long NUMBER_OF_TIME_WINDOWS;
 
   private static final Logger logger = LoggerFactory.getLogger(RateLimiter.class);
   private Map<String, Map<Long, AtomicLong>> UserTimeMap = new ConcurrentHashMap<>();
@@ -53,7 +53,6 @@ public class RateLimiter {
       //Handle new time windows
       if (!timeWindowVSCountMap.containsKey(currentTimeWindow))
         timeWindowVSCountMap.put(currentTimeWindow, new AtomicLong(0L));
-
       Long newCount = timeWindowVSCountMap.get(currentTimeWindow).longValue() + 1;
       timeWindowVSCountMap.remove(currentTimeWindow);
       timeWindowVSCountMap.put(currentTimeWindow, new AtomicLong(newCount));
@@ -63,18 +62,19 @@ public class RateLimiter {
     System.out.println("currentTimeWindow" + currentTimeWindow + "=" + false+" countInOverallTime="+countInOverallTime);
     return false;
   }
-
+  // Remove Old Entries for the user and returns the current overall request count for the user
   public long removeOldEntriesForUser(String username, long currentTimeWindow, Map<Long, AtomicLong> timeWindowVSCountMap)
   {
-    Long countInOverallTime = 0L;
+    List <Long> oldEntriesToBeDeleted=new ArrayList<>();
+    long overallCount=0L;
     for (Long timeWindow : timeWindowVSCountMap.keySet()) {
-      //Remove old entries for the user
+      //Mark old entries for deletion
       if ((currentTimeWindow - timeWindow) * NUMBER_OF_TIME_WINDOWS > TIME_LIMIT)
-        timeWindowVSCountMap.remove(timeWindow);
-      //Compute overall request count for the user in the time_limit window
+        oldEntriesToBeDeleted.add(timeWindow);
       else
-        countInOverallTime += timeWindowVSCountMap.get(timeWindow).longValue();
+        overallCount+=timeWindowVSCountMap.get(timeWindow).longValue();
     }
-    return countInOverallTime;
+    timeWindowVSCountMap.keySet().removeAll(oldEntriesToBeDeleted);
+    return overallCount;
   }
 }
