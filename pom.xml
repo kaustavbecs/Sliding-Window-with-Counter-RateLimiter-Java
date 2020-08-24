@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>com.ope.ratelimiter</groupId>
 	<artifactId>ratelimiter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>ratelimiter</name>
+	<version>1.0.0</version>
+	<name>RateLimiter</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>

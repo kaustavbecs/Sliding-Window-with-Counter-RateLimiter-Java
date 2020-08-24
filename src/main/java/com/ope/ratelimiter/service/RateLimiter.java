@@ -35,7 +35,7 @@ public class RateLimiter {
       individualUserHits = new HashMap<>();
       individualUserHits.put(currentTime, new AtomicLong(1L));
       UserTimeMap.put(username, individualUserHits);
-      System.out.println("currentTimeWindow" + currentTime + "=" + true);
+      logger.debug("CurrentTimeWindow:" + currentTime +" Result:true "+ " Count:1");
       return true;
     }
     // Case 2: User specific Entry exists, Time Window for the user may or may not exist in the map
@@ -51,15 +51,12 @@ public class RateLimiter {
 
     if (countInOverallTime < RATE_LIMIT) {
       //Handle new time windows
-      if (!timeWindowVSCountMap.containsKey(currentTimeWindow))
-        timeWindowVSCountMap.put(currentTimeWindow, new AtomicLong(0L));
-      Long newCount = timeWindowVSCountMap.get(currentTimeWindow).longValue() + 1;
-      timeWindowVSCountMap.remove(currentTimeWindow);
+      Long newCount = timeWindowVSCountMap.getOrDefault(currentTimeWindow, new AtomicLong(0)).longValue() + 1;
       timeWindowVSCountMap.put(currentTimeWindow, new AtomicLong(newCount));
-      System.out.println("currentTimeWindow" + currentTimeWindow + "=" + true+" countInOverallTime="+countInOverallTime);
+      logger.debug("CurrentTimeWindow:" + currentTimeWindow +" Result:true "+ " Count:"+countInOverallTime);
       return true;
     }
-    System.out.println("currentTimeWindow" + currentTimeWindow + "=" + false+" countInOverallTime="+countInOverallTime);
+    logger.debug("CurrentTimeWindow:" + currentTimeWindow +" Result:false "+ " Count:"+countInOverallTime);
     return false;
   }
   // Remove Old Entries for the user and returns the current overall request count for the user
@@ -68,8 +65,8 @@ public class RateLimiter {
     List <Long> oldEntriesToBeDeleted=new ArrayList<>();
     long overallCount=0L;
     for (Long timeWindow : timeWindowVSCountMap.keySet()) {
-      //Mark old entries for deletion
-      if ((currentTimeWindow - timeWindow) * NUMBER_OF_TIME_WINDOWS > TIME_LIMIT)
+      //Mark old entries (Entries older than the oldest valid time window within the time limit) for deletion
+      if ((currentTimeWindow - timeWindow) >= TIME_LIMIT/NUMBER_OF_TIME_WINDOWS)
         oldEntriesToBeDeleted.add(timeWindow);
       else
         overallCount+=timeWindowVSCountMap.get(timeWindow).longValue();
